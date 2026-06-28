@@ -243,7 +243,7 @@ async function sbConnect(){
   const btn=document.getElementById('sb-btn');if(btn){btn.textContent='接続中...';btn.disabled=true;}
   S.sbUrl=url;S.sbKey=key;S.sbCode=code;S.sbMember=member||'メンバー';saveAll();
   await initSupabase();
-  if(syncStatus==='online'){toast('接続しました');render();}
+  if(sbClient){toast('接続しました');render();}
   else{toast('接続に失敗しました');if(btn){btn.textContent='接続してリアルタイム同期を開始';btn.disabled=false;}}
 }
 function renderInput(){
