@@ -202,6 +202,8 @@ function nav(page){dci();S.page=page;S.menuPage=null;document.querySelectorAll('
 function render(){
   const now=new Date(),bal=getMonthBal(now.getFullYear(),now.getMonth());
   const hdr=document.getElementById('hdr');if(!hdr)return;
+  let _date,_memo,_amount;
+  if(S.page==='input'&&!S.menuPage){_date=document.getElementById('inp-date')?.value;_memo=document.getElementById('inp-memo')?.value;_amount=document.getElementById('inp-amount')?.value;}
   const titles={input:'入力',calendar:'カレンダー',report:'レポート',budget:'予算',menu:'メニュー'};
   const subT={supabase:'家族共有設定',fixed:'固定費・定期収入',cats:'カテゴリー編集',theme:'テーマ',advrep:'詳細レポート',password:'パスワード設定'};
   if(S.menuPage){hdr.innerHTML=`<button class="hdr-back" onclick="backMenu()">‹ 戻る</button><div class="hdr-title">${subT[S.menuPage]||''}</div><div id="syncArea" style="display:flex;align-items:center;gap:5px"></div>`;}
@@ -219,6 +221,7 @@ function render(){
   else if(S.page==='report'){c.innerHTML=renderReport();requestAnimationFrame(()=>{drawTrend();drawPie();});}
   else if(S.page==='budget')c.innerHTML=renderBudget();
   else if(S.page==='menu')c.innerHTML=renderMenu();
+  if(S.page==='input'&&!S.menuPage){if(_date){const e=document.getElementById('inp-date');if(e)e.value=_date;}if(_memo){const e=document.getElementById('inp-memo');if(e)e.value=_memo;}if(_amount){const e=document.getElementById('inp-amount');if(e)e.value=_amount;}}
 }
 function backMenu(){S.menuPage=null;render();}
 function goMenu(p){dci();S.menuPage=p;render();}
