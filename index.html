@@ -139,7 +139,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 <script>
 const DEF_EXP=['食費','交通費','住居費','光熱費','通信費','医療費','娯楽費','衣服費','教育費','その他'];
 const DEF_INC=['給与','副業','ボーナス','贈り物','その他'];
-const CAT_EMO={'食費':'🍚','交通費':'🚃','住居費':'🏠','光熱費':'💡','通信費':'📱','医療費':'💊','娯楽費':'🎮','衣服費':'👕','教育費':'📚','その他':'📦','給与':'💴','副業':'💼','ボーナス':'🎁','贈り物':'🎀'};
+const CAT_ICON={'食費':'ti-shopping-bag','交通費':'ti-train','住居費':'ti-home','光熱費':'ti-flame','通信費':'ti-device-mobile','医療費':'ti-pill','娯楽費':'ti-device-gamepad-2','衣服費':'ti-hanger','教育費':'ti-book','その他':'ti-dots-circle-horizontal','給与':'ti-currency-yen','副業':'ti-briefcase','ボーナス':'ti-gift','贈り物':'ti-heart'};
 const PIE_COLS=['#378ADD','#1D9E75','#D85A30','#D4537E','#BA7517','#534AB7','#A32D2D','#3B6D11','#0F6E56','#888780'];
 const THEMES={blue:{fill:'#378ADD',fh:'#185FA5',bg:'#E6F1FB',bdr:'#85B7EB',txt:'#185FA5',label:'ブルー'},green:{fill:'#1D9E75',fh:'#0F6E56',bg:'#E1F5EE',bdr:'#5DCAA5',txt:'#0F6E56',label:'グリーン'},purple:{fill:'#534AB7',fh:'#3C3489',bg:'#EEEDFE',bdr:'#AFA9EC',txt:'#3C3489',label:'パープル'},coral:{fill:'#D85A30',fh:'#993C1D',bg:'#FAECE7',bdr:'#F0997B',txt:'#993C1D',label:'コーラル'},pink:{fill:'#D4537E',fh:'#993556',bg:'#FBEAF0',bdr:'#ED93B1',txt:'#993556',label:'ピンク'},amber:{fill:'#BA7517',fh:'#854F0B',bg:'#FAEEDA',bdr:'#EF9F27',txt:'#854F0B',label:'アンバー'}};
 let ci=null,li=null,advCi=null,sbClient=null,sbChannel=null,syncStatus='idle',unlocked=!!localStorage.getItem('kk_unlocked');
@@ -161,7 +161,7 @@ function saveAll(){ks('kk_budgets',S.budgets);ks('kk_records',S.records);ks('kk_
 function fmt(n){return Number(n).toLocaleString('ja-JP');}
 function toast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 function dci(){if(ci){ci.destroy();ci=null;}if(li){li.destroy();li=null;}if(advCi){advCi.destroy();advCi=null;}}
-function emo(c){return CAT_EMO[c]||'📦';}
+function emo(c){const ic=CAT_ICON[c]||'ti-dots-circle-horizontal';return `<i class="ti ${ic}"></i>`;}
 function applyTheme(th){const t=THEMES[th]||THEMES.blue,r=document.documentElement;r.style.setProperty('--fill-accent',t.fill);r.style.setProperty('--fill-accent-hover',t.fh);r.style.setProperty('--bg-accent',t.bg);r.style.setProperty('--border-accent',t.bdr);r.style.setProperty('--text-accent',t.txt);}
 function isSb(){return !!(S.sbUrl&&S.sbKey&&S.sbCode);}
 function setSyncStatus(s){
