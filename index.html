@@ -377,17 +377,28 @@ async function importCSV(input){
   const text=await file.text();
   const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
   if(!lines.length){toast('ファイルが空です');return;}
+  const hasHeader=lines[0].startsWith('日付');
+  const headers=hasHeader?lines[0].split(',').map(c=>c.trim()):null;
+  let iDate=0,iType=1,iCat=2,iMemo=3,iAmt=4;
+  if(headers){
+    headers.forEach((h,i)=>{
+      if(h==='日付')iDate=i;
+      else if(h==='種別')iType=i;
+      else if(h==='カテゴリー')iCat=i;
+      else if(h==='メモ')iMemo=i;
+      else if(h==='金額')iAmt=i;
+    });
+  }
   let added=0,skipped=0;
-  const start=lines[0].startsWith('日付')?1:0;
-  lines.slice(start).forEach(line=>{
+  lines.slice(hasHeader?1:0).forEach(line=>{
     const cols=line.split(',').map(c=>c.replace(/^"|"$/g,'').trim());
-    if(cols.length<5)return;
-    const [date,typeStr,cat,memo,amtStr,by='']=cols;
-    const amount=parseInt(amtStr.replace(/[^0-9]/g,''));
+    if(cols.length<5){skipped++;return;}
+    const date=cols[iDate],typeStr=cols[iType],cat=cols[iCat],memo=cols[iMemo];
+    const amount=parseInt((cols[iAmt]||'').replace(/[^0-9]/g,''));
     const type=typeStr==='収入'?'inc':'exp';
     if(!date||isNaN(amount)||amount<=0){skipped++;return;}
     const id='csv_'+Date.now()+'_'+Math.random().toString(36).slice(2);
-    S.records.push({id,type,date,memo,amount,cat:cat||'その他',by});
+    S.records.push({id,type,date,memo,amount,cat:cat||'その他',by:''});
     added++;
   });
   if(added===0){toast('取り込める行がありませんでした');input.value='';return;}
