@@ -180,10 +180,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 <script>
 const DEF_EXP=['食費','日用品','子育て','交通費/駐車場','医療費','遊び/趣味','旅行','交際費','水道/電気/ガス代','自動車ローン','その他','家具/家電'];
 const DEF_INC=['給与','副業','ボーナス','贈り物','その他'];
-const CATS_VER='2';
+const CATS_VER='3';
 if(localStorage.getItem('kk_cats_ver')!==CATS_VER){
   localStorage.setItem('kk_ecats',JSON.stringify(DEF_EXP));
-  const _cm={'交通費':'交通費/駐車場','光熱費':'水道/電気/ガス代','娯楽費':'遊び/趣味','衣服費':'日用品','教育費':'子育て','住居費':'その他','通信費':'その他'};
+  const _cm={'交通費':'交通費/駐車場','光熱費':'水道/電気/ガス代','娯楽費':'遊び/趣味','衣服費':'日用品','教育費':'子育て','住居費':'その他','通信費':'その他','家具・家電':'家具/家電','水道・電気・ガス代':'水道/電気/ガス代'};
   const _fi=JSON.parse(localStorage.getItem('kk_fixed')||'[]').map(f=>({...f,cat:_cm[f.cat]||f.cat}));
   localStorage.setItem('kk_fixed',JSON.stringify(_fi));
   localStorage.setItem('kk_cats_ver',CATS_VER);
