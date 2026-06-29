@@ -181,7 +181,13 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 const DEF_EXP=['食費','日用品','子育て','交通費/駐車場','医療費','遊び/趣味','旅行','交際費','水道/電気/ガス代','自動車ローン','その他','家具/家電'];
 const DEF_INC=['給与','副業','ボーナス','贈り物','その他'];
 const CATS_VER='2';
-if(localStorage.getItem('kk_cats_ver')!==CATS_VER){localStorage.setItem('kk_ecats',JSON.stringify(DEF_EXP));localStorage.setItem('kk_cats_ver',CATS_VER);}
+if(localStorage.getItem('kk_cats_ver')!==CATS_VER){
+  localStorage.setItem('kk_ecats',JSON.stringify(DEF_EXP));
+  const _cm={'交通費':'交通費/駐車場','光熱費':'水道/電気/ガス代','娯楽費':'遊び/趣味','衣服費':'日用品','教育費':'子育て','住居費':'その他','通信費':'その他'};
+  const _fi=JSON.parse(localStorage.getItem('kk_fixed')||'[]').map(f=>({...f,cat:_cm[f.cat]||f.cat}));
+  localStorage.setItem('kk_fixed',JSON.stringify(_fi));
+  localStorage.setItem('kk_cats_ver',CATS_VER);
+}
 const CAT_ICON={'食費':'ti-shopping-bag','日用品':'ti-shopping-cart','子育て':'ti-baby-carriage','交通費/駐車場':'ti-car','医療費':'ti-pill','遊び/趣味':'ti-palette','旅行':'ti-plane','交際費':'ti-users','水道・電気・ガス代':'ti-droplet','自動車ローン':'ti-credit-card','家具・家電':'ti-sofa','その他':'ti-dots-circle-horizontal','交通費':'ti-train','住居費':'ti-home','光熱費':'ti-flame','通信費':'ti-device-mobile','娯楽費':'ti-device-gamepad-2','衣服費':'ti-hanger','教育費':'ti-book','給与':'ti-currency-yen','副業':'ti-briefcase','ボーナス':'ti-gift','贈り物':'ti-heart'};
 const PIE_COLS=['#378ADD','#1D9E75','#D85A30','#D4537E','#BA7517','#534AB7','#A32D2D','#3B6D11','#0F6E56','#888780'];
 const THEMES={blue:{fill:'#378ADD',fh:'#185FA5',bg:'#E6F1FB',bdr:'#85B7EB',txt:'#185FA5',label:'ブルー'},green:{fill:'#1D9E75',fh:'#0F6E56',bg:'#E1F5EE',bdr:'#5DCAA5',txt:'#0F6E56',label:'グリーン'},purple:{fill:'#534AB7',fh:'#3C3489',bg:'#EEEDFE',bdr:'#AFA9EC',txt:'#3C3489',label:'パープル'},coral:{fill:'#D85A30',fh:'#993C1D',bg:'#FAECE7',bdr:'#F0997B',txt:'#993C1D',label:'コーラル'},pink:{fill:'#D4537E',fh:'#993556',bg:'#FBEAF0',bdr:'#ED93B1',txt:'#993556',label:'ピンク'},amber:{fill:'#BA7517',fh:'#854F0B',bg:'#FAEEDA',bdr:'#EF9F27',txt:'#854F0B',label:'アンバー'}};
