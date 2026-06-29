@@ -178,9 +178,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
 </div>
 <script>
-const DEF_EXP=['食費','交通費','住居費','光熱費','通信費','医療費','娯楽費','衣服費','教育費','その他'];
+const DEF_EXP=['食費','日用品','子育て','交通費/駐車場','医療費','遊び/趣味','旅行','交際費','水道/電気/ガス代','自動車ローン','その他','家具/家電'];
 const DEF_INC=['給与','副業','ボーナス','贈り物','その他'];
-const CAT_ICON={'食費':'ti-shopping-bag','交通費':'ti-train','住居費':'ti-home','光熱費':'ti-flame','通信費':'ti-device-mobile','医療費':'ti-pill','娯楽費':'ti-device-gamepad-2','衣服費':'ti-hanger','教育費':'ti-book','その他':'ti-dots-circle-horizontal','給与':'ti-currency-yen','副業':'ti-briefcase','ボーナス':'ti-gift','贈り物':'ti-heart'};
+const CAT_ICON={'食費':'ti-shopping-bag','日用品':'ti-shopping-cart','子育て':'ti-baby-carriage','交通費/駐車場':'ti-car','医療費':'ti-pill','遊び/趣味':'ti-palette','旅行':'ti-plane','交際費':'ti-users','水道・電気・ガス代':'ti-droplet','自動車ローン':'ti-credit-card','家具・家電':'ti-sofa','その他':'ti-dots-circle-horizontal','交通費':'ti-train','住居費':'ti-home','光熱費':'ti-flame','通信費':'ti-device-mobile','娯楽費':'ti-device-gamepad-2','衣服費':'ti-hanger','教育費':'ti-book','給与':'ti-currency-yen','副業':'ti-briefcase','ボーナス':'ti-gift','贈り物':'ti-heart'};
 const PIE_COLS=['#378ADD','#1D9E75','#D85A30','#D4537E','#BA7517','#534AB7','#A32D2D','#3B6D11','#0F6E56','#888780'];
 const THEMES={blue:{fill:'#378ADD',fh:'#185FA5',bg:'#E6F1FB',bdr:'#85B7EB',txt:'#185FA5',label:'ブルー'},green:{fill:'#1D9E75',fh:'#0F6E56',bg:'#E1F5EE',bdr:'#5DCAA5',txt:'#0F6E56',label:'グリーン'},purple:{fill:'#534AB7',fh:'#3C3489',bg:'#EEEDFE',bdr:'#AFA9EC',txt:'#3C3489',label:'パープル'},coral:{fill:'#D85A30',fh:'#993C1D',bg:'#FAECE7',bdr:'#F0997B',txt:'#993C1D',label:'コーラル'},pink:{fill:'#D4537E',fh:'#993556',bg:'#FBEAF0',bdr:'#ED93B1',txt:'#993556',label:'ピンク'},amber:{fill:'#BA7517',fh:'#854F0B',bg:'#FAEEDA',bdr:'#EF9F27',txt:'#854F0B',label:'アンバー'}};
 let ci=null,li=null,advCi=null,sbClient=null,sbChannel=null,syncStatus='idle',unlocked=!!localStorage.getItem('kk_unlocked');
@@ -301,7 +301,7 @@ function renderInput(){
     <div class="inp-row"><span class="inp-label">メモ</span><input type="text" id="inp-memo" placeholder="例：スーパーで買い物" style="flex:1;padding:8px 10px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--surface-1);color:var(--text-primary);font-size:16px"></div>
     <div class="inp-row"><span class="inp-label">${S.inputTab==='exp'?'支出':'収入'}</span><div class="awr"><input type="number" id="inp-amount" placeholder="0" min="0" inputmode="numeric"><span class="yn">円</span></div><button class="dnav" onclick="openCalc()" type="button" style="margin-left:4px"><i class="ti ti-calculator"></i></button></div>
   </div>
-  <div class="sec"><div class="st">カテゴリー</div><div class="cat-grid">${catBtns}</div><button class="btn btn-p" onclick="saveRec()">保存する</button></div>
+  <div class="sec"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span class="st" style="margin-bottom:0">カテゴリー</span><button onclick="goMenu('cats')" style="background:none;border:none;font-size:12px;color:var(--text-accent);cursor:pointer">編集 ›</button></div><div class="cat-grid">${catBtns}</div><button class="btn btn-p" onclick="saveRec()">保存する</button></div>
   <div style="border-top:0.5px solid var(--border);padding:10px 20px 4px"><div class="st">最近の記録</div></div>${rh}`;
 }
 function dateNav(d){const i=document.getElementById('inp-date');if(!i)return;const dt=new Date(i.value||new Date().toISOString().split('T')[0]);dt.setDate(dt.getDate()+d);i.value=dt.toISOString().split('T')[0];}
