@@ -70,6 +70,19 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .lock-input:focus{border-color:var(--fill-accent)}
 .lock-btn{width:100%;padding:14px;border:none;border-radius:12px;background:var(--fill-accent);color:#fff;font-size:16px;font-weight:500;cursor:pointer;margin-bottom:10px}
 .lock-err{font-size:13px;color:#E24B4A;text-align:center;min-height:20px}
+.calc-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:flex-end;z-index:1000}
+.calc-overlay.show{display:flex}
+.calc-wrap{background:var(--surface-2);width:100%;max-width:430px;margin:0 auto;border-radius:20px 20px 0 0;padding:12px 14px calc(16px + env(safe-area-inset-bottom,0px))}
+.calc-disp{font-size:28px;font-weight:300;text-align:right;padding:10px 12px 4px;color:var(--text-primary);min-height:52px;word-break:break-all;letter-spacing:1px}
+.calc-sub{font-size:13px;color:var(--text-muted);text-align:right;padding:0 12px 10px;min-height:18px}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:8px}
+.cbtn{padding:16px 8px;border:none;border-radius:12px;font-size:19px;font-weight:500;cursor:pointer;background:var(--surface-0);color:var(--text-primary);-webkit-tap-highlight-color:transparent;transition:opacity .1s}
+.cbtn:active{opacity:.7}
+.cbtn.op{background:var(--bg-accent);color:var(--text-accent)}
+.cbtn.eq{background:var(--fill-accent);color:#fff}
+.cbtn.fn{background:var(--surface-1);color:var(--text-secondary);font-size:15px}
+.cbtn.zero{grid-column:span 2}
+.calc-done{width:100%;padding:13px;border:none;border-radius:12px;background:var(--surface-0);color:var(--text-secondary);font-size:14px;cursor:pointer;margin-top:2px}
 .cal-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--surface-2);border-bottom:0.5px solid var(--border)}
 .cnb{background:none;border:none;cursor:pointer;color:var(--text-primary);padding:6px 10px;font-size:20px}
 .cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border)}
@@ -127,6 +140,34 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div id="hdrBal" style="font-size:12px;font-weight:500;text-align:right;flex-shrink:0"></div>
   </div>
   <div class="toast" id="toast"></div>
+  <div class="calc-overlay" id="calcOverlay" onclick="if(event.target===this)calcClose()">
+    <div class="calc-wrap">
+      <div class="calc-disp" id="calcDisp">0</div>
+      <div class="calc-sub" id="calcSub"></div>
+      <div class="calc-grid">
+        <button class="cbtn fn" onclick="calcIn('C')">C</button>
+        <button class="cbtn fn" onclick="calcIn('←')">←</button>
+        <button class="cbtn fn" onclick="calcIn('%')">%</button>
+        <button class="cbtn op" onclick="calcIn('÷')">÷</button>
+        <button class="cbtn" onclick="calcIn('7')">7</button>
+        <button class="cbtn" onclick="calcIn('8')">8</button>
+        <button class="cbtn" onclick="calcIn('9')">9</button>
+        <button class="cbtn op" onclick="calcIn('×')">×</button>
+        <button class="cbtn" onclick="calcIn('4')">4</button>
+        <button class="cbtn" onclick="calcIn('5')">5</button>
+        <button class="cbtn" onclick="calcIn('6')">6</button>
+        <button class="cbtn op" onclick="calcIn('-')">−</button>
+        <button class="cbtn" onclick="calcIn('1')">1</button>
+        <button class="cbtn" onclick="calcIn('2')">2</button>
+        <button class="cbtn" onclick="calcIn('3')">3</button>
+        <button class="cbtn op" onclick="calcIn('+')">+</button>
+        <button class="cbtn zero" onclick="calcIn('0')">0</button>
+        <button class="cbtn" onclick="calcIn('.')">.</button>
+        <button class="cbtn eq" onclick="calcIn('=')">＝</button>
+      </div>
+      <button class="calc-done" onclick="calcClose()">キャンセル</button>
+    </div>
+  </div>
   <div class="content" id="content"></div>
   <div class="bnav">
     <div class="ni active" onclick="nav('input')" id="nav-input"><i class="ti ti-pencil"></i><span>入力</span></div>
@@ -258,7 +299,7 @@ function renderInput(){
   <div style="padding:0 20px;background:var(--surface-2);border-bottom:0.5px solid var(--border)">
     <div class="inp-row"><span class="inp-label">日付</span><div class="date-wrap"><button class="dnav" onclick="dateNav(-1)">‹</button><input type="date" id="inp-date" value="${today}"><button class="dnav" onclick="dateNav(1)">›</button></div></div>
     <div class="inp-row"><span class="inp-label">メモ</span><input type="text" id="inp-memo" placeholder="例：スーパーで買い物" style="flex:1;padding:8px 10px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--surface-1);color:var(--text-primary);font-size:16px"></div>
-    <div class="inp-row"><span class="inp-label">${S.inputTab==='exp'?'支出':'収入'}</span><div class="awr"><input type="number" id="inp-amount" placeholder="0" min="0" inputmode="numeric"><span class="yn">円</span></div></div>
+    <div class="inp-row"><span class="inp-label">${S.inputTab==='exp'?'支出':'収入'}</span><div class="awr"><input type="number" id="inp-amount" placeholder="0" min="0" inputmode="numeric"><span class="yn">円</span></div><button class="dnav" onclick="openCalc()" type="button" style="margin-left:4px"><i class="ti ti-calculator"></i></button></div>
   </div>
   <div class="sec"><div class="st">カテゴリー</div><div class="cat-grid">${catBtns}</div><button class="btn btn-p" onclick="saveRec()">保存する</button></div>
   <div style="border-top:0.5px solid var(--border);padding:10px 20px 4px"><div class="st">最近の記録</div></div>${rh}`;
@@ -310,6 +351,8 @@ function renderMenu(){return `
   <div class="mi" onclick="goMenu('advrep')"><i class="ti ti-report-analytics"></i><span style="color:var(--text-primary)">詳細レポートを見る</span><span class="mi-arr"><i class="ti ti-chevron-right"></i></span></div>
   <div style="padding:10px 20px 4px;font-size:11px;color:var(--text-muted);border-bottom:0.5px solid var(--border);margin-top:4px">データ</div>
   <div class="mi" onclick="exportData()"><i class="ti ti-download"></i><span style="color:var(--text-primary)">CSVエクスポート</span></div>
+  <div class="mi" onclick="document.getElementById('csvImportInput').click()"><i class="ti ti-upload"></i><span style="color:var(--text-primary)">CSVインポート</span></div>
+  <input type="file" id="csvImportInput" accept=".csv" style="display:none" onchange="importCSV(this)">
   <div class="mi" onclick="if(confirm('すべてのデータを削除しますか？'))clearAll()"><i class="ti ti-trash"></i><span style="color:var(--text-primary)">データをすべて削除</span></div>
   <div style="padding:14px 20px;color:var(--text-muted);font-size:12px">記録件数: ${S.records.length}件</div>`;}
 function renderFixed(){const items=S.fixedItems.map(fi=>`<div class="fi-row"><div style="flex:1;min-width:0"><div style="font-size:13px;color:var(--text-primary)">${emo(fi.cat)} ${fi.name}</div><div style="font-size:11px;color:var(--text-muted)">${fi.type==='exp'?'支出':'収入'} · ${fi.cat} · 毎月${fi.day}日 · ${fmt(fi.amount)}円</div></div><button class="dbtn" onclick="delFixed('${fi.id}')"><i class="ti ti-trash"></i></button></div>`).join('');const now=new Date(),key=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;return `<div class="sec"><div class="st">登録済み（${S.fixedItems.length}件）</div><div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:0 14px;margin-bottom:12px">${S.fixedItems.length?items:'<div style="padding:14px 0;font-size:13px;color:var(--text-muted);text-align:center">登録されていません</div>'}</div><div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--text-muted)">今月（${key}）: ${S.appliedM[key]?'✓ 適用済み':'未適用'}</span>${!S.appliedM[key]?`<button class="bsm" onclick="applyFixedNow()">今月に適用</button>`:''}</div><div class="st">新規追加</div><div class="fld"><label>名前</label><input type="text" id="fn" placeholder="例：家賃、電気代"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fld"><label>種別</label><select id="ft"><option value="exp">支出</option><option value="inc">収入</option></select></div><div class="fld"><label>毎月の日</label><select id="fd">${Array.from({length:28},(_,i)=>`<option value="${i+1}">${i+1}日</option>`).join('')}</select></div></div><div class="fld"><label>カテゴリー</label><select id="fc"><optgroup label="支出">${S.expCats.map(c=>`<option value="${c}">${c}</option>`).join('')}</optgroup><optgroup label="収入">${S.incCats.map(c=>`<option value="${c}">${c}</option>`).join('')}</optgroup></select></div><div class="fld"><label>金額（円）</label><div style="position:relative"><input type="number" id="fa" placeholder="0" min="0" inputmode="numeric" style="padding-right:28px"><span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:12px">円</span></div></div><button class="btn btn-p" onclick="addFixed()">追加</button></div>`;}
@@ -319,7 +362,7 @@ const ADV_TABS=['年間収支','年間カテゴリ','全期間収支','全期間
 function renderAdvRep(){const tabs=ADV_TABS.map((t,i)=>`<div class="stab${S.advRepTab===i?' active':''}" onclick="setAdvTab(${i})">${t}</div>`).join('');const yB=(S.advRepTab===0||S.advRepTab===1)?`<div class="ms"><button class="msb" onclick="advYNav(-1)">‹</button><span style="font-size:14px;font-weight:500;color:var(--text-primary)">${S.advY}年</span><button class="msb" onclick="advYNav(1)">›</button></div>`:'';return `<div style="overflow-x:auto;border-bottom:0.5px solid var(--border);background:var(--surface-2)"><div style="display:flex;min-width:max-content">${tabs}</div></div>${yB}<div class="sec"><div style="position:relative;height:240px"><canvas id="advChart"></canvas></div></div>`;}
 function drawAdvChart(){const cv=document.getElementById('advChart');if(!cv)return;if(advCi){advCi.destroy();advCi=null;}const fns=[cv=>{const y=S.advY,lb=Array.from({length:12},(_,i)=>`${i+1}月`),inc=lb.map((_,m)=>S.records.filter(r=>{const d=new Date(r.date);return d.getFullYear()===y&&d.getMonth()===m&&r.type==='inc';}).reduce((a,r)=>a+r.amount,0)),exp=lb.map((_,m)=>S.records.filter(r=>{const d=new Date(r.date);return d.getFullYear()===y&&d.getMonth()===m&&r.type==='exp';}).reduce((a,r)=>a+r.amount,0));advCi=new Chart(cv,{type:'bar',data:{labels:lb,datasets:[{label:'収入',data:inc,backgroundColor:'#1D9E7599'},{label:'支出',data:exp,backgroundColor:'#E24B4A99'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{ticks:{callback:v=>fmt(v)}}}}});},cv=>{const y=S.advY,recs=S.records.filter(r=>new Date(r.date).getFullYear()===y&&r.type==='exp'),ct=S.expCats.map((c,i)=>({cat:c,total:recs.filter(r=>r.cat===c).reduce((a,r)=>a+r.amount,0),color:PIE_COLS[i%PIE_COLS.length]})).filter(x=>x.total>0).sort((a,b)=>b.total-a.total);if(!ct.length){cv.parentElement.innerHTML='<div class="es">データがありません</div>';return;}advCi=new Chart(cv,{type:'bar',data:{labels:ct.map(x=>x.cat),datasets:[{data:ct.map(x=>x.total),backgroundColor:ct.map(x=>x.color)}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmt(v)}}}}});},cv=>{const ms=[...new Set(S.records.map(r=>{const d=new Date(r.date);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}))].sort();if(!ms.length){cv.parentElement.innerHTML='<div class="es">データがありません</div>';return;}const inc=ms.map(ym=>S.records.filter(r=>r.date.startsWith(ym)&&r.type==='inc').reduce((a,r)=>a+r.amount,0)),exp=ms.map(ym=>S.records.filter(r=>r.date.startsWith(ym)&&r.type==='exp').reduce((a,r)=>a+r.amount,0));advCi=new Chart(cv,{type:'bar',data:{labels:ms.map(m=>m.replace('-','年')+'月'),datasets:[{label:'収入',data:inc,backgroundColor:'#1D9E7599'},{label:'支出',data:exp,backgroundColor:'#E24B4A99'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{x:{ticks:{maxRotation:45}},y:{ticks:{callback:v=>fmt(v)}}}}});},cv=>{const ct=S.expCats.map((c,i)=>({cat:c,total:S.records.filter(r=>r.cat===c&&r.type==='exp').reduce((a,r)=>a+r.amount,0),color:PIE_COLS[i%PIE_COLS.length]})).filter(x=>x.total>0).sort((a,b)=>b.total-a.total);if(!ct.length){cv.parentElement.innerHTML='<div class="es">データがありません</div>';return;}advCi=new Chart(cv,{type:'doughnut',data:{labels:ct.map(x=>x.cat),datasets:[{data:ct.map(x=>x.total),backgroundColor:ct.map(x=>x.color),borderWidth:2,borderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right',labels:{font:{size:11}}}}}});},cv=>{const ms=[...new Set(S.records.map(r=>{const d=new Date(r.date);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}))].sort();if(!ms.length){cv.parentElement.innerHTML='<div class="es">データがありません</div>';return;}let cum=0;const data=ms.map(ym=>{const i2=S.records.filter(r=>r.date.startsWith(ym)&&r.type==='inc').reduce((a,r)=>a+r.amount,0),e=S.records.filter(r=>r.date.startsWith(ym)&&r.type==='exp').reduce((a,r)=>a+r.amount,0);cum+=i2-e;return cum;});const th=THEMES[S.theme].fill;advCi=new Chart(cv,{type:'line',data:{labels:ms.map(m=>m.replace('-','年')+'月'),datasets:[{label:'累積収支',data,borderColor:th,backgroundColor:th+'22',fill:true,tension:0.3,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{x:{ticks:{maxRotation:45}},y:{ticks:{callback:v=>(v>=0?'+':'')+fmt(v)+'円'}}}}});}];fns[S.advRepTab](cv);}
 function setIT(t){S.inputTab=t;S.selCat='';render();}function setRT(t){S.repTab=t;render();}function setRP(p){S.repPeriod=p;render();}function selCat(c){S.selCat=c;render();}function calNav(d){S.calM+=d;if(S.calM<0){S.calM=11;S.calY--;}else if(S.calM>11){S.calM=0;S.calY++;}render();}function repNav(d){if(S.repPeriod==='month'){S.repM+=d;if(S.repM<0){S.repM=11;S.repY--;}else if(S.repM>11){S.repM=0;S.repY++;}}else S.repY+=d;render();}function setAdvTab(i){dci();S.advRepTab=i;render();}function advYNav(d){dci();S.advY+=d;render();}
-async function saveRec(){const date=document.getElementById('inp-date')?.value,memo=document.getElementById('inp-memo')?.value,amount=parseInt(document.getElementById('inp-amount')?.value);if(!date){toast('日付を入力してください');return;}if(!amount||amount<=0){toast('金額を入力してください');return;}if(!S.selCat){toast('カテゴリーを選択してください');return;}const rec={id:Date.now().toString(),type:S.inputTab,date,memo:memo||'',amount,cat:S.selCat,by:S.sbMember||''};S.records.push(rec);saveAll();if(sbClient&&isSb()){const records={};S.records.forEach(r=>{records[r.id]=r;});try{await sbClient.from('family_data').upsert({family_code:S.sbCode,records});}catch(e){}}S.selCat='';toast('保存しました');render();}
+async function saveRec(){const date=document.getElementById('inp-date')?.value,memo=document.getElementById('inp-memo')?.value,amount=parseInt(document.getElementById('inp-amount')?.value);if(!date){toast('日付を入力してください');return;}if(!amount||amount<=0){toast('金額を入力してください');return;}if(!S.selCat){toast('カテゴリーを選択してください');return;}const rec={id:Date.now().toString(),type:S.inputTab,date,memo:memo||'',amount,cat:S.selCat,by:S.sbMember||''};S.records.push(rec);saveAll();if(sbClient&&isSb()){const records={};S.records.forEach(r=>{records[r.id]=r;});try{await sbClient.from('family_data').upsert({family_code:S.sbCode,records});}catch(e){}}S.selCat='';toast('保存しました');render();const _d=document.getElementById('inp-date');const _m=document.getElementById('inp-memo');const _a=document.getElementById('inp-amount');if(_m)_m.value='';if(_a)_a.value='';}
 async function delRec(id){S.records=S.records.filter(r=>r.id!==id);saveAll();if(sbClient&&isSb()){const records={};S.records.forEach(r=>{records[r.id]=r;});try{await sbClient.from('family_data').upsert({family_code:S.sbCode,records});}catch(e){}}render();}
 async function saveBg(cat){const v=parseInt(document.getElementById('bg-'+cat)?.value);if(!isNaN(v)&&v>=0){S.budgets[cat]=v;saveAll();if(sbClient&&isSb())try{await sbClient.from('family_data').upsert({family_code:S.sbCode,budgets:S.budgets});}catch(e){}toast(`${cat}の予算を設定しました`);render();}}
 async function addFixed(){const n=document.getElementById('fn')?.value?.trim(),a=parseInt(document.getElementById('fa')?.value),t=document.getElementById('ft')?.value,c=document.getElementById('fc')?.value,d=parseInt(document.getElementById('fd')?.value)||1;if(!n){toast('名前を入力してください');return;}if(!a||a<=0){toast('金額を入力してください');return;}const fi={id:Date.now().toString(),name:n,type:t,cat:c,amount:a,day:d};S.fixedItems.push(fi);saveAll();if(sbClient&&isSb())await sbPushAll();toast('固定項目を追加しました');render();}
@@ -329,6 +372,30 @@ async function addCat(type){const id=type==='exp'?'nec':'nic',v=document.getElem
 async function delCat(type,i){if(type==='exp')S.expCats.splice(i,1);else S.incCats.splice(i,1);saveAll();if(sbClient&&isSb())await sbPushAll();render();}
 function resetCats(){if(!confirm('カテゴリーを初期値に戻しますか？'))return;S.expCats=[...DEF_EXP];S.incCats=[...DEF_INC];saveAll();toast('初期値に戻しました');render();}
 function setTheme(th){S.theme=th;saveAll();applyTheme(th);render();}
+async function importCSV(input){
+  const file=input.files[0];if(!file)return;
+  const text=await file.text();
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
+  if(!lines.length){toast('ファイルが空です');return;}
+  let added=0,skipped=0;
+  const start=lines[0].startsWith('日付')?1:0;
+  lines.slice(start).forEach(line=>{
+    const cols=line.split(',').map(c=>c.replace(/^"|"$/g,'').trim());
+    if(cols.length<5)return;
+    const [date,typeStr,cat,memo,amtStr,by='']=cols;
+    const amount=parseInt(amtStr.replace(/[^0-9]/g,''));
+    const type=typeStr==='収入'?'inc':'exp';
+    if(!date||isNaN(amount)||amount<=0){skipped++;return;}
+    const id='csv_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    S.records.push({id,type,date,memo,amount,cat:cat||'その他',by});
+    added++;
+  });
+  if(added===0){toast('取り込める行がありませんでした');input.value='';return;}
+  saveAll();
+  if(sbClient&&isSb())await sbPushAll();
+  toast(`${added}件取り込みました${skipped?'（'+skipped+'件スキップ）':''}`);
+  input.value='';render();
+}
 function exportData(){const rows=S.records.map(r=>`${r.date},${r.type==='exp'?'支出':'収入'},${r.cat},"${r.memo}",${r.amount},${r.by||''}`).join('\n');const blob=new Blob(['日付,種別,カテゴリー,メモ,金額,記録者\n'+rows],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='kakeibo.csv';a.click();toast('エクスポートしました');}
 function clearAll(){S.records=[];S.budgets={};S.appliedM={};saveAll();if(sbClient&&isSb())sbPushAll();toast('削除しました');render();}
 function showLock(){
@@ -338,6 +405,27 @@ function showLock(){
   setTimeout(()=>{const i=document.getElementById('lockPw');if(i)i.focus();},100);
   document.getElementById('lockPw').addEventListener('keydown',e=>{if(e.key==='Enter')tryUnlock();});
 }
+let _calcExpr='',_calcPrev='',_calcOp='',_calcFresh=false;
+function openCalc(){const v=document.getElementById('inp-amount')?.value;_calcExpr=v||'';_calcPrev='';_calcOp='';_calcFresh=false;document.getElementById('calcDisp').textContent=_calcExpr||'0';document.getElementById('calcSub').textContent='';document.getElementById('calcOverlay').classList.add('show');}
+function calcClose(){document.getElementById('calcOverlay').classList.remove('show');}
+function calcIn(v){
+  const disp=document.getElementById('calcDisp'),sub=document.getElementById('calcSub');
+  if(v==='C'){_calcExpr='';_calcPrev='';_calcOp='';_calcFresh=false;disp.textContent='0';sub.textContent='';return;}
+  if(v==='←'){_calcExpr=_calcFresh?'':_calcExpr.slice(0,-1);_calcFresh=false;disp.textContent=_calcExpr||'0';return;}
+  if(v==='%'){const n=parseFloat(_calcExpr);if(!isNaN(n)){_calcExpr=String(n/100);disp.textContent=_calcExpr;}return;}
+  if(['+','-','×','÷'].includes(v)){
+    if(_calcExpr||_calcPrev){if(_calcExpr&&_calcPrev&&_calcOp){const r=calcEval(_calcPrev,_calcExpr,_calcOp);_calcPrev=String(r);disp.textContent=_calcPrev;}else if(_calcExpr){_calcPrev=_calcExpr;}_calcOp=v;_calcExpr='';_calcFresh=false;sub.textContent=_calcPrev+' '+v;}
+    return;
+  }
+  if(v==='='){
+    if(_calcPrev&&_calcOp&&(_calcExpr||_calcExpr==='0')){const r=calcEval(_calcPrev,_calcExpr||_calcPrev,_calcOp);const ri=Math.round(r);document.getElementById('inp-amount').value=ri>0?ri:'';sub.textContent='';_calcExpr=String(ri);_calcPrev='';_calcOp='';_calcFresh=true;disp.textContent=String(ri);calcClose();}
+    return;
+  }
+  if(v==='.'&&_calcExpr.includes('.'))return;
+  if(_calcFresh){_calcExpr='';_calcFresh=false;}
+  _calcExpr+=v;disp.textContent=_calcExpr;
+}
+function calcEval(a,b,op){const x=parseFloat(a),y=parseFloat(b);if(op==='+')return x+y;if(op==='-')return x-y;if(op==='×')return x*y;if(op==='÷')return y!==0?x/y:0;return y;}
 function lockNow(){unlocked=false;localStorage.removeItem('kk_unlocked');showLock();}
 function tryUnlock(){
   const pw=document.getElementById('lockPw')?.value||'';
