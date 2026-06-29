@@ -225,7 +225,7 @@ function applyRemoteData(data){
   if(data.records){const remote=Object.values(data.records).filter(Boolean),localIds=new Set(S.records.map(r=>r.id)),remoteIds=new Set(remote.map(r=>r.id));remote.forEach(r=>{if(!localIds.has(r.id)){S.records.push(r);changed=true;}});const prev=S.records.length;S.records=S.records.filter(r=>remoteIds.has(r.id));if(S.records.length!==prev)changed=true;}
   if(data.budgets&&JSON.stringify(data.budgets)!==JSON.stringify(S.budgets)){S.budgets=data.budgets;changed=true;}
   if(data.fixed_items){const r=Object.values(data.fixed_items).filter(Boolean);if(JSON.stringify(r)!==JSON.stringify(S.fixedItems)){S.fixedItems=r;changed=true;}}
-  if(data.exp_cats&&JSON.stringify(data.exp_cats)!==JSON.stringify(S.expCats)){S.expCats=data.exp_cats;changed=true;}
+  if(data.exp_cats){if(localStorage.getItem('kk_cats_ver')===CATS_VER){if(JSON.stringify(data.exp_cats)!==JSON.stringify(S.expCats))setTimeout(()=>sbPushAll(),800);}else if(JSON.stringify(data.exp_cats)!==JSON.stringify(S.expCats)){S.expCats=data.exp_cats;changed=true;}}
   if(data.inc_cats&&JSON.stringify(data.inc_cats)!==JSON.stringify(S.incCats)){S.incCats=data.inc_cats;changed=true;}
   if(data.applied_m&&JSON.stringify(data.applied_m)!==JSON.stringify(S.appliedM)){S.appliedM=data.applied_m;changed=true;}
   if(changed){saveAll();safeRender();}
